@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native';
+import { captureRef } from 'react-native-view-shot'
+import { Camera, CameraType } from 'expo-camera';
+import * as Sharing from 'expo-sharing'
 
 import { Header } from '../components/Header';
 import { Button } from '../components/Button';
@@ -9,17 +12,55 @@ import { styles } from './styles';
 import { POSITIONS, PositionProps } from '../utils/positions';
 
 export function Home() {
+  // const [type, setType] = useState(CameraType.back);
+  const [photo, setPhotoURI] = useState<null | string>(null)
+  const [hasCameraPermission, setHasCameraPermission] = useState(false)
   const [positionSelected, setPositionSelected] = useState<PositionProps>(POSITIONS[0]);
 
+  const cameraRef = useRef<Camera>(null)
+  const screenShotRef = useRef(null)
+
+  async function handleTakePicture() {
+    const photo = await cameraRef.current.takePictureAsync()
+    setPhotoURI(photo.uri)
+  }
+
+  async function shareScreenShot() {
+    const screenshot = await captureRef(screenShotRef)
+    await Sharing.shareAsync("file://" + screenshot)
+  }
+
+  useEffect(() => {
+    Camera.requestCameraPermissionsAsync()
+      .then(response => setHasCameraPermission(response.granted))
+  }, [])
+
+  // function toggleCameraType() {
+  //   setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
+  // }
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} >
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View>
+        <View ref={screenShotRef}>
           <Header position={positionSelected} />
 
-          <View style={styles.picture}>
+          <View style={styles.picture} >
 
-            <Image source={{ uri: 'https://github.com/rodrigorgtic.png' }} style={styles.camera} />
+            {
+              hasCameraPermission && !photo ?
+                <Camera
+                  ref={cameraRef}
+                  style={styles.camera}
+                  type={CameraType.front}
+                  ratio='1:1' />
+                :
+                <Image
+                  source={{ uri: photo ? photo : 'https://filestore.community.support.microsoft.com/api/images/508bdc53-129c-4bc4-807c-6e357e4933a0?upload=true' }}
+                  style={styles.camera}
+                  onLoad={shareScreenShot}
+                />
+            }
 
             <View style={styles.player}>
               <TextInput
@@ -35,7 +76,7 @@ export function Home() {
           positionSelected={positionSelected}
         />
 
-        <Button title="Compartilhar" />
+        <Button title="Compartilhar" onPress={handleTakePicture} />
       </ScrollView>
     </SafeAreaView>
   );
