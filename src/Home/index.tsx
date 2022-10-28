@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native'
+import { Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, View, Text } from 'react-native'
 import { captureRef } from 'react-native-view-shot'
 import { Camera, CameraType } from 'expo-camera'
 import * as Sharing from 'expo-sharing'
@@ -38,7 +38,7 @@ export function Home() {
   return (
     <SafeAreaView style={styles.container} >
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View ref={screenShotRef}>
+        <View ref={screenShotRef} style={styles.sticker}>
           <Header position={positionSelected} />
 
           <View style={styles.picture} >
@@ -71,6 +71,10 @@ export function Home() {
           onChangePosition={setPositionSelected}
           positionSelected={positionSelected}
         />
+
+        <TouchableOpacity onPress={() => setPhotoURI(null)}>
+          <Text style={styles.retry}>Nova foto</Text>
+        </TouchableOpacity>
 
         <Button title="Compartilhar" onPress={handleTakePicture} />
       </ScrollView>
