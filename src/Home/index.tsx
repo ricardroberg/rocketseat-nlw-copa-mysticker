@@ -1,21 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
-import { Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native';
+import { useState, useEffect, useRef } from 'react'
+import { Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native'
 import { captureRef } from 'react-native-view-shot'
-import { Camera, CameraType } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera'
 import * as Sharing from 'expo-sharing'
 
-import { Header } from '../components/Header';
-import { Button } from '../components/Button';
-import { PositionChoice } from '../components/PositionChoice';
+import { Header } from '../components/Header'
+import { Button } from '../components/Button'
+import { PositionChoice } from '../components/PositionChoice'
 
-import { styles } from './styles';
-import { POSITIONS, PositionProps } from '../utils/positions';
+import { styles } from './styles'
+import { POSITIONS, PositionProps } from '../utils/positions'
 
 export function Home() {
-  // const [type, setType] = useState(CameraType.back);
   const [photo, setPhotoURI] = useState<null | string>(null)
   const [hasCameraPermission, setHasCameraPermission] = useState(false)
-  const [positionSelected, setPositionSelected] = useState<PositionProps>(POSITIONS[0]);
+
+  const [positionSelected, setPositionSelected] = useState<PositionProps>(POSITIONS[0])
 
   const cameraRef = useRef<Camera>(null)
   const screenShotRef = useRef(null)
@@ -34,10 +34,6 @@ export function Home() {
     Camera.requestCameraPermissionsAsync()
       .then(response => setHasCameraPermission(response.granted))
   }, [])
-
-  // function toggleCameraType() {
-  //   setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
-  // }
 
   return (
     <SafeAreaView style={styles.container} >
@@ -79,5 +75,5 @@ export function Home() {
         <Button title="Compartilhar" onPress={handleTakePicture} />
       </ScrollView>
     </SafeAreaView>
-  );
+  )
 }
